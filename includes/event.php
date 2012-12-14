@@ -466,7 +466,7 @@ function eo_delete_event_occurrences($post_id){
 				else:
 					if( empty($values) ){
 						$date = (int) $start_days[0]->format('d');
-						$n = ceil(($date+1)/7); // nth weekday of month.
+						$n = ceil($date/7); // nth weekday of month.
 						$day_num = intval($start_days[0]->format('w')); //0 (Sun) - 6(Sat)
 
 					}else{
