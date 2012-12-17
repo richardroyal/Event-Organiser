@@ -543,7 +543,7 @@ function eo_get_venue_map($venue_slug_or_id='', $args=array()){
 			), $args );
 
 		//Cast zoom as integer
-		$zoom = (int) $args['zoom']; 
+		$args['zoom'] = (int) $args['zoom']; 
 		
 		//Escape attributes
 		$width = esc_attr($args['width']);
