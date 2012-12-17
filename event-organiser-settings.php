@@ -392,7 +392,6 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
       
 			<?php screen_icon('options-general'); ?>
 		        <?php 
-				settings_errors(); 
 
 				$active_tab = ( isset( $_GET[ 'tab' ] ) &&  isset( $this->tabs[$_GET[ 'tab' ]] ) ? $_GET[ 'tab' ] : 'general');
 				$page = $this->slug;
