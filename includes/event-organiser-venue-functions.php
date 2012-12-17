@@ -358,8 +358,18 @@ function eo_get_venue_address($venue_slug_or_id=''){
  * @return array List of Term (venue) Objects
  */
 function eo_get_venues($args=array()){
-	$args = wp_parse_args( $args, array('hide_empty'=>0 ) );
-	return get_terms('event-venue',$args);
+	$args = wp_parse_args( $args, array('hide_empty'=>0, 'fields'=>'all') );
+	$venues = get_terms('event-venue',$args);
+	if( $venues ){
+		//Ensure IDs are cast as integers {@link https://github.com/stephenh1988/Event-Organiser/issues/21}
+		if( $args['fields'] == 'ids' ){
+			$venues = array_map('intval', $venues);
+		}elseif( $args['fields'] == 'all' ){
+			foreach( $venues as $venue)
+				$venue->term_id = (int)$venue->term_id;
+		}
+	}
+	return $venues;
 }
 
 
