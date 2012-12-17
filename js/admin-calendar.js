@@ -113,7 +113,6 @@
                         		var the_date = jQuery.fullCalendar.formatDate(startDate, format, options) + ' &mdash; ' + jQuery.fullCalendar.formatDate(endDate, format, options)
                     		}
                     			$("#eo_event_create_cal input[name='eo_event[event_title]']").val('');
-                    			$("#eo_event_create_cal select[name='eo_event[Venue']] option:first-child").attr("selected", 'selected');
                     			$("#eo_event_create_cal input.ui-autocomplete-input").val('');
                     			$("#eo_event_create_cal textarea[name='eo_event[event_content]']").val('');
                     			$("#eo_event_create_cal input[name='eo_event[StartDate]']").val(start_date);
