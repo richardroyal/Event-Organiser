@@ -39,8 +39,9 @@ function eo_get_venue($event_id=''){
 
 /**
 * Returns the slug of the venue of an event.
-* Can be used inside the loop to output the 
-* venue id of the current event.
+*
+* When used without an argument it uses the event specified in the global $post (e.g. current event in the loop).
+* Can be used inside the loop to output the venue id of the current event.
 * @since 1.0.0
 *
 * @param int $post_id The event (post) ID. Uses current event if empty.
@@ -71,6 +72,7 @@ function eo_get_venue_slug($event_id=''){
 /**
 * A utility function for getting the venue ID from a venue ID or slug.
 * Useful for when we don't know which is being passed to us, but we want the ID.
+* IDs **must** be cast as integers
 * @since 1.6
 *
 * @param mixed $venue_slug_or_id The venue ID as an integer. Or Slug as string. Uses venue of current event if empty.
@@ -122,6 +124,7 @@ function eo_get_venue_by($field,$value,$output = OBJECT, $filter = 'raw' ){
 * If used with any arguments uses the venue of the current event.
 *
 * Returns the name of a venue specified by it's slug or ID. If used inside the loop, it can return the name of the current post's venue. If specifying the venue by ID, **the ID must be an integer**.
+*
 * This function behaves differently to `eo_get_venue_slug` which takes the event ID, rather than venue ID or slug, as an optional argument.
 *
 * @since 1.0.0
@@ -155,6 +158,10 @@ function eo_venue_name($venue_slug_or_id=''){
 /**
 * Returns the description of the description of an event.
 * If used with any arguments uses the venue of the current event.
+*
+* Returns the description of a venue specified by it's slug or ID. When used without an argument it uses the event specified in the `global $post` (i.e. the current event in the Loop). If specifying the 
+* venue by ID, **the ID must be an integer**.
+*
 * @since 1.0.0
 *
 * @param int|string $venue_slug_or_id The venue ID (as an integer) or slug (as a string). Uses venue of current event if empty.
@@ -189,6 +196,9 @@ function eo_venue_description($venue_slug_or_id=''){
 /**
 * Returns an latitude-longtitude array (keys 'lat', 'lng')
 * If used with any arguments uses the venue of the current event.
+*
+* Returns a latitude-longitude array of a venue specified by it's slug or ID. When used without an argument it uses the event specified in the `global $post` (i.e. the current event in the Loop). If 
+* specifying the venue by ID, **the ID must be an integer**.
 * @since 1.0.0
 *
 * @param int|string $venue_slug_or_id The venue ID (as an integer) or slug (as a string). Uses venue of current event if empty.
@@ -203,6 +213,9 @@ function eo_get_venue_latlng($venue_slug_or_id=''){
 /**
 * Returns the latitude co-ordinate of a venue.
 * If used with any arguments uses the venue of the current event.
+*
+* Returns the latitude of a venue specified by it's slug or ID. When used without an argument it uses the event specified in the `global $post` (i.e. the current event in the Loop). If specifying the 
+* specifying the venue by ID, **the ID must be an integer**.
 * @since 1.0.0
 *
 * @param int|string $venue_slug_or_id The venue ID (as an integer) or slug (as a string). Uses venue of current event if empty.
@@ -218,6 +231,9 @@ function eo_get_venue_lat($venue_slug_or_id=''){
 /**
 * Returns the longtitude co-ordinate of a venue.
 * If used with any arguments uses the venue of the current event.
+*
+* Returns the longtitude of a venue specified by it's slug or ID. When used without an argument it uses the event specified in the `global $post` (i.e. the current event in the Loop). If specifying the 
+* specifying the venue by ID, **the ID must be an integer**.
 * @since 1.0.0
 *
 * @param int|string $venue_slug_or_id The venue ID (as an integer) or slug (as a string). Uses venue of current event if empty.
@@ -311,45 +327,23 @@ function eo_get_venue_address($venue_slug_or_id=''){
  *
  * The list of arguments that $args can contain, which will overwrite the defaults:
  *
- * orderby - Default is 'name'. Can be name, count, term_group, slug or nothing
+ * * **orderby** - Default is 'name'. Can be name, count, term_group, slug or nothing
  * (will use venue/term ID), Passing a custom value other than these will cause it to
  * order based on the custom value.
- *
- * order - Default is ASC. Can use DESC.
- *
- * hide_empty - Default is 0
- *
- * exclude - Default is an empty array. An array, comma- or space-delimited string
+ * * **order** - Default is ASC. Can use DESC.
+ * * **hide_empty** - Default is 0 (false)
+ * * **exclude** - Default is an empty array. An array, comma- or space-delimited string
  * of term ids to exclude from the return array. If 'include' is non-empty,
  * 'exclude' is ignored.
- *
- * include - Default is an empty array. An array, comma- or space-delimited string
+ * * **include** - Default is an empty array. An array, comma- or space-delimited string
  * of term ids to include in the return array.
- *
- * number - The maximum number of terms to return. Default is to return them all.
- *
- * offset - The number by which to offset the terms query.
- *
- * fields - Default is 'all', which returns an array of term objects.
- * If 'fields' is 'ids' or 'names', returns an array of
- * integers or strings, respectively.
- *
- * slug - Returns terms whose "slug" matches this value. Default is empty string.
- *
- * search - Returned terms' names will contain the value of 'search',
- * case-insensitive. Default is an empty string.
- *
- * The argument 'pad_counts', if set to true will include the quantity of a term's
- * children in the quantity of each term's "count" object variable.
- *
- * The 'get' argument, if set to 'all' instead of its default empty string,
- * returns terms regardless of ancestry or whether the terms are empty.
- *
- * The 'cache_domain' argument enables a unique cache key to be produced when this query is stored
- * in object cache. For instance, if you are using one of this function's filters to modify the
- * query (such as 'terms_clauses'), setting 'cache_domain' to a unique value will not overwrite
- * the cache for similar queries. Default value is 'core'.
- *
+ * * **number** - The maximum number of terms to return. Default is to return them all.
+ * * **offset** - The number by which to offset the terms query.
+ * * **fields** - Default is 'all', which returns an array of term objects.
+ * If 'fields' is 'ids' or 'names', returns an array of integers or strings, respectively.
+ * *  **slug** - Returns terms whose "slug" matches this value. Default is empty string.
+ * * **search** - Returned terms' names will contain the value of 'search',
+ * * **case-insensitive**. Default is an empty string.
  * @uses get_terms()
  * @link https://gist.github.com/3902494 Gist for creating an archive page of all the venues
  * @since 1.0.0
