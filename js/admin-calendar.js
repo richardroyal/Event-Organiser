@@ -5,7 +5,7 @@
 	$('#eo-dialog-tabs').tabs();
 	$('.eo-dialog').dialog({ 
 		autoOpen: false,
-		width: 450,
+		width: 527,
 		modal:true
 	});
 	$('#events-meta').parent().find('.ui-dialog-titlebar-close').appendTo('.ui-tabs-nav').closest('.ui-dialog').children('.ui-dialog-titlebar').remove();
