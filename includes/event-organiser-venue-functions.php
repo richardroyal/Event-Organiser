@@ -323,9 +323,9 @@ function eo_get_venue_address($venue_slug_or_id=''){
 
 
 /**
- * Retrieve array of venues. Acts as a wrapper for get_terms, except hide_empty defaults to false.
+ * Retrieve array of venues. Acts as a wrapper for {@link http://codex.wordpress.org/Function_Reference/get_terms `get_terms()`} , except `hide_empty` defaults to false.
  *
- * The list of arguments that $args can contain, which will overwrite the defaults:
+ * The list of arguments that `$args` can contain, which will overwrite the defaults:
  *
  * * **orderby** - Default is 'name'. Can be name, count, term_group, slug or nothing
  * (will use venue/term ID), Passing a custom value other than these will cause it to
