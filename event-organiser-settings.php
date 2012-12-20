@@ -131,8 +131,8 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 						'label_for'=>'runningisnotpast',
 						'select'=> eventorganiser_get_option('runningisnotpast',0),
 						'options'=>array(
-							'0'=> __('Yes','eventorganiser'),
-							'1'=> __('No','eventorganiser'),
+							'0'=> __('No','eventorganiser'),
+							'1'=> __('Yes','eventorganiser'),
 						),
 						'help'=>__("If 'no' is selected, an occurrence of an event is only past when it has finished. Otherwise, an occurrence is considered 'past' as soon as it starts.",'eventorganiser'),
 				));
