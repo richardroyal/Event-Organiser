@@ -1,6 +1,6 @@
 === Event Organiser ===
 Contributors: stephenh1988
-Donate link: http://www.wp-event-organiser.com
+Donate link: http://www.wp-event-organiser.com/donate
 Tags: events, event, event categories, event organiser, event calendar, events calendar, event management, ical, locations, google map, widget, venues, maps, gigs, shows,
 Requires at least: 3.3
 Tested up to: 3.5
