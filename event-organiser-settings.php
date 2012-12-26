@@ -90,9 +90,28 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 		switch($tab_id){
 			case 'general':
 				/* General - main */
-				add_settings_field('supports', __('Select which features events should support','eventorganiser'), array($this,'display_event_properties'), 'eventorganiser_'.$tab_id, $tab_id,
+				add_settings_field('supports', __('Select which features events should support','eventorganiser'), 'eventorganiser_checkbox_field', 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'supports',
+						'checked' => eventorganiser_get_option('supports'),
+						'options' => array(
+							'author' => __('Organiser','eventorganiser').' ('.__('Author').')',
+							'thumbnail' =>__('Thumbnail'),
+							'excerpt' => __('Excerpt'),
+							'custom-fields' => __('Custom Fields'),
+							'comments' => __('Comments'),
+							'revisions' => __('Revisions')
+						),
+						'name'=>'eventorganiser_options[supports]'
+				));
+
+				add_settings_field('showpast',  __("Show past events:",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id,
+					array(
+						'label_for'=>'showpast',
+						'name'=>'eventorganiser_options[showpast]',
+						'options'=> 1,
+						'checked'=> eventorganiser_get_option('showpast'),
+						'help'=> __("Display past events on calendars, event lists and archives (this can be over-ridden by shortcode attributes and widget options).",'eventorganiser')
 				));
 
 				add_settings_field('addtomenu',  __("Add an 'events' link to the navigation menu:",'eventorganiser'), array($this,'menu_option'), 'eventorganiser_'.$tab_id, $tab_id,
@@ -103,7 +122,8 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('dateformat', __('Date Format:','eventorganiser'), 'eventorganiser_select_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'dateformat',
-						'select'=> eventorganiser_get_option('dateformat'),
+						'selected'=> eventorganiser_get_option('dateformat'),
+						'name'=>'eventorganiser_options[dateformat]',
 						'options'=>array(
 							'dd-mm'=> __('dd-mm-yyyy','eventorganiser'),
 							'mm-dd'=> __('mm-dd-yyyy','eventorganiser'),
@@ -114,22 +134,26 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('showpast',  __("Show past events:",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'showpast',
-						'checked'=>  eventorganiser_get_option('showpast'),
+						'name'=>'eventorganiser_options[showpast]',
+						'options'=> 1,
+						'checked'=> eventorganiser_get_option('showpast'),
 						'help'=> __("Display past events on calendars, event lists and archives (this can be over-ridden by shortcode attributes and widget options).",'eventorganiser')
 				));
 
 				add_settings_field('group_events',  __("Group occurrences",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'group_events',
-						'checked'=> eventorganiser_get_option('group_events',''),
-						'value'=>'series',
+						'name'=>'eventorganiser_options[group_events]',
+						'options'=> 'series',
+						'checked'=> eventorganiser_get_option('group_events'),
 						'help'=> __("If selected only one occurrence of an event will be displayed on event lists and archives (this can be over-ridden by shortcode attributes and widget options.",'eventorganiser')
 				));				
 
 				add_settings_field('runningisnotpast',  __("Are current events past?",'eventorganiser'), 'eventorganiser_select_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'runningisnotpast',
-						'select'=> eventorganiser_get_option('runningisnotpast',0),
+						'name'=>'eventorganiser_options[runningisnotpast]',
+						'selected'=> eventorganiser_get_option('runningisnotpast',0),
 						'options'=>array(
 							'0'=> __('No','eventorganiser'),
 							'1'=> __('Yes','eventorganiser'),
@@ -140,6 +164,8 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('deleteexpired',  __("Delete expired events:",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'deleteexpired',
+						'name'=>'eventorganiser_options[deleteexpired]',
+						'options'=> 1,
 						'checked'=> eventorganiser_get_option('deleteexpired'),
 						'help'=> __("If selected the event will be automatically trashed 24 hours after the last occurrence finishes.",'eventorganiser')
 				));
@@ -147,6 +173,8 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('feed',  __("Enable events ICAL feed:",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'feed',
+						'name'=>'eventorganiser_options[feed]',
+						'options'=> 1,
 						'checked'=>eventorganiser_get_option('feed'),
 						'help'=>sprintf(__('If selected, visitors can subscribe to your events with the url: %s','eventorganiser'), '<code>'.eo_get_events_feed().'</code>')
 				));
@@ -154,13 +182,17 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('excludefromsearch',  __("Exclude events from searches:",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'excludefromsearch',
+						'name'=>'eventorganiser_options[excludefromsearch]',
+						'options'=> 1,
 						'checked'=>eventorganiser_get_option('excludefromsearch'),
 				));
 
 				add_settings_field('templates',  __("Enable templates:",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id.'_templates',
 					array(
 						'label_for'=>'templates',
-						'checked'=> eventorganiser_get_option('templates'),
+						'name'=>'eventorganiser_options[templates]',
+						'options'=> 1,
+						'checked'=>eventorganiser_get_option('templates'),
 						'help'=>__("For each of the pages, the corresponding template is used. To use your own template simply give it the same name and store in your theme folder. By default, if Event Organiser cannot find a template in your theme directory, it will use its own default template. To prevent this, uncheck this option. WordPress will then decide which template from your theme's folder to use.",'eventorganiser'). sprintf("<p><strong> %s </strong><code>archive-event.php</code></p>
 											<p><strong> %s </strong><code>single-event.php</code></p>
 											<p><strong> %s </strong><code>venue-template.php</code></p>
@@ -181,6 +213,8 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('prettyurl',  __("Enable event pretty permalinks:",'eventorganiser'), 'eventorganiser_checkbox_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'prettyurl',
+						'name'=>'eventorganiser_options[prettyurl]',
+						'options'=> 1,
 						'checked'=>eventorganiser_get_option('prettyurl'),
 						'help'=>__("If you have pretty permalinks enabled, select to have pretty premalinks for events.",'eventorganiser')
 				));
@@ -189,6 +223,7 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('url_event', __("Event (single)",'eventorganiser'), 'eventorganiser_text_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'url_event',
+						'name'=>'eventorganiser_options[url_event]',
 						'value'=>eventorganiser_get_option('url_event'),
 						'help'=>"<label><code>{$site_url}/<strong>".eventorganiser_get_option('url_event')."</strong>/[event_slug]</code></label>"
 				));
@@ -196,6 +231,7 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('url_events', __("Event (archive)",'eventorganiser'), 'eventorganiser_text_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'url_events',
+						'name'=>'eventorganiser_options[url_events]',
 						'value'=>eventorganiser_get_option('url_events'),
 						'help'=>"<label><code>{$site_url}/<strong>".eventorganiser_get_option('url_events')."</strong></code></label>"
 				));
@@ -203,6 +239,7 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('url_venue', __("Venues",'eventorganiser'), 'eventorganiser_text_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'url_venue',
+						'name'=>'eventorganiser_options[url_venue]',
 						'value'=>eventorganiser_get_option('url_venue'),
 						'help'=>"<label><code>{$site_url}/<strong>".eventorganiser_get_option('url_venue')."</strong>/[venue_slug]</code></label>"
 				));
@@ -210,6 +247,7 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('url_cat', __("Event Categories",'eventorganiser'), 'eventorganiser_text_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'url_cat',
+						'name'=>'eventorganiser_options[url_cat]',
 						'value'=>eventorganiser_get_option('url_cat'),
 						'help'=>"<label><code>{$site_url}/<strong>".eventorganiser_get_option('url_cat')."</strong>/[event_cat_slug]</code></label>"
 				));
@@ -217,6 +255,7 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 				add_settings_field('url_cat', __("Event Tags",'eventorganiser'), 'eventorganiser_text_field' , 'eventorganiser_'.$tab_id, $tab_id,
 					array(
 						'label_for'=>'url_tag',
+						'name'=>'eventorganiser_options[url_tag]',
 						'value'=>eventorganiser_get_option('url_tag'),
 						'help'=>"<label><code>{$site_url}/<strong>".eventorganiser_get_option('url_tag')."</strong>/[event_tag_slug]</code></label>"
 				));
@@ -433,47 +472,6 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 		do_action('eventorganiser_event_settings_imexport'); 
 	}
 	
-
-	function display_event_properties(){
-		$counter=1; 
-		 $supports = eventorganiser_get_option('supports');
-
-		$supportables= array(
-			'author' => __('Organiser','eventorganiser').' ('.__('Author').')',
-			'thumbnail' =>__('Thumbnail'),
-			'excerpt' => __('Excerpt'),
-			'custom-fields' => __('Custom Fields'),
-			'comments' => __('Comments'),
-			'revisions' => __('Revisions')
-		);
-
-		echo '<table>';
-			echo '<tr>';
-			foreach ( $supportables as $supp => $supp_display):
-				printf('<td>
-							<input type="checkbox" name="eventorganiser_options[supports][]" value="%s"  %s/> %s
-						</td>',
-						$supp,
-						checked(true, in_array($supp,$supports),false),
-						esc_html($supp_display)
-				);
-
-				if($counter==4)
-					echo '</tr><tr>';
-				$counter++;
-			endforeach;
-
-			printf('<td>
-						<input type="checkbox" name="eventorganiser_options[eventtag]" value="1" %s /> %s
-					</td>',
-					checked(1,eventorganiser_get_option('eventtag'),false),
-					esc_html__("Event Tags",'eventorganiser')
-			);
-			echo '</tr>';
-		echo '</table>';
-	}
-
-
 	function display_permissions(){
 		global $wp_roles;
 		 echo '<p>'.__('Set permissions for events and venue management','eventorganiser').'</p>';
@@ -553,144 +551,293 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 }
 $settings_page = new EventOrganiser_Settings_Page();
 
+/**
+ * Utility function for printing/returning radio boxes
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the radiobox (alias: label_for)
+ * * **name** - The name of the radiobox
+ * * **checked** - The the value to have checked
+ * * **options** - Array of options in 'value'=>'Label' format
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
 function eventorganiser_radio_field( $args ){
 
-	if ( $args['label_for'] ){
+	$args = wp_parse_args($args,array(
+			'checked'=>'', 'help' => '', 'options'=>'', 'name'=>'', 'echo'=>1,
+			'class'=>'', 'label' => '','label_for'=>''
+			));	
 
-		$current = $args['select'];
-		$name_prefix = isset($args['name_prefix']) ?  $args['name_prefix'] : 'eventorganiser_options';
-		printf('<fieldset %s>%s',
-			isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '',
-			isset($args['label']) ? '<legend class="screen-reader-text"><span>'.esc_html($args['label']).'</span></legend>' : ''
-		);
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$checked = $args['checked'];
+	$label = !empty($args['label']) ? '<legend class="screen-reader-text"><span>'.esc_html($args['label']).'</span></legend>' : '';
+	$class =  !empty($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '';
 
-		if( !empty($args['options']) ){
-			foreach ($args['options'] as $value => $label ){
-				printf('<label for="%s"><input type="radio" id="%s" %s name="%s" value="%s"> <span> %s </span></label><br>',
-					esc_attr($args['label_for'].'_'.$value),
-					esc_attr($args['label_for'].'_'.$value),
-					checked($value, $current, false),
-					esc_attr($name_prefix.'['.$args['label_for'].']'),
-					esc_attr($value),
-					esc_html($label));
-			}
+	$html = sprintf('<fieldset %s> %s', $class, $label);
+	if( !empty($args['options']) ){
+		foreach ($args['options'] as $value => $opt_label ){
+			printf('<label for="%1$s"><input type="radio" id="%1$s" name="%3$s" value="%4$s" %2$s> <span> %5$s </span></label><br>',
+				esc_attr($id.'_'.$value),
+				checked($value, $checked, false),
+				esc_attr($name),
+				esc_attr($value),
+				esc_html($opt_label));
 		}
-		if(!empty($args['help'])){
-				echo '<p class="description">'.esc_html($args['help']).'</p>';
-		}
-		echo '</fieldset>';
-
 	}
+	if(!empty($args['help'])){
+		$html .= '<p class="description">'.esc_html($args['help']).'</p>';
+	}
+	$html .= '</fieldset>';
 }
 
-	function eventorganiser_select_field($args){
 
-		if ( $args['label_for'] ){
-			$current = $args['select'];
-			$name_prefix = isset($args['name_prefix']) ?  $args['name_prefix'] : 'eventorganiser_options';
-			printf('<select %s name="%s" id="%s">',
-				isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '',
-				esc_attr($name_prefix.'['.$args['label_for'].']'),
-				esc_attr($args['label_for'])
-			);
+/**
+ * Utility function for printing/returning select field
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the select box (alias: label_for)
+ * * **name** - The name of the select box
+ * * **selected** - The the value to have selected
+ * * **options** - Array of options in 'value'=>'Label' format
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_select_field($args){
+
+	$args = wp_parse_args($args,array(
+			'select'=>'', 'help' => '', 'options'=>'', 'name'=>'', 'echo'=>1,
+			'label_for'=>''
+		));	
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$selected = $args['selected'];
+	$class = isset($args['class']) ? esc_attr($args['class'])  : '';
+
+
+	$html = sprintf('<select %s name="%s" id="%s">',
+		isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '',
+			esc_attr($name),
+			esc_attr($args['label_for'])
+		);
 		
-			if( !empty($args['options']) ){
-				foreach ($args['options'] as $value => $label ){
-					printf('<option value="%s" %s> %s </option>',esc_attr($value), selected($current, $value, false), esc_html($label));
-				}
-			}
-			echo '</select>';
-
-			if(!empty($args['help'])){
-				echo '<p class="description">'.esc_html($args['help']).'</p>';
+		if( !empty($args['options']) ){
+			foreach ($args['options'] as $value => $label ){
+				$html .= sprintf('<option value="%s" %s> %s </option>',esc_attr($value), selected($selected, $value, false), esc_html($label));
 			}
 		}
+	$html .= '</select>';
+
+	if(!empty($args['help'])){
+		$html .= '<p class="description">'.esc_html($args['help']).'</p>';
 	}
 
-	function eventorganiser_text_field($args){
-		if ( $args['label_for'] ){
-			$current = $current = $args['value'];
-			$type = isset($args['type']) ? $args['type'] : 'text';
-			$name_prefix = isset($args['name_prefix']) ?  $args['name_prefix'] : 'eventorganiser_options';
+	if( $args['echo'] )
+		echo $html;
 
-			printf('<input type="%s" name="%s" class="%s regular-text ltr" id="%s" value="%s" autocomplete="off" />',
-				esc_attr($type),
-				esc_attr($name_prefix.'['.$args['label_for'].']'),
-				isset($args['class']) ? esc_attr($args['class'])  : '',
-				esc_attr($args['label_for']),
-				esc_attr($current)
-			);
-			if(!empty($args['help'])){
-				echo '<p class="description">'.$args['help'].'</p>';
-			}
-		}
+	return $html;
+}
+
+
+/**
+ * Utility function for printing/returning text field
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the select box (alias: label_for)
+ * * **name** - The name of the select box
+ * * **value** - The value of the text field
+ * * **type** - The type  of the text field (e.g. 'text','hidden','password')
+ * * **options** - Array of options in 'value'=>'Label' format
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_text_field($args){
+
+	$args = wp_parse_args($args,
+		array(
+		 	'type' => 'text', 'value'=>'', 'placeholder' => '', 'help' => '','label_for'=>'',
+			 'size'=>false, 'min' => false, 'max' => false, 'style'=>false, 'echo'=>true,
+			)
+		);		
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$value = $args['value'];
+	$type = $args['type'];
+	$class = isset($args['class']) ? esc_attr($args['class'])  : '';
+
+	$min = (  !empty($args['min']) ?  sprintf('min="%d"', $args['min']) : '' );
+	$max = (  !empty($args['max']) ?  sprintf('max="%d"', $args['max']) : '' );
+	$size = (  !empty($args['size']) ?  sprintf('size="%d"', $args['size']) : '' );
+	$style = (  !empty($args['style']) ?  sprintf('style="%s"', $args['style']) : '' );
+	$placeholder = ( !empty($args['placeholder']) ? sprintf('placeholder="%s"',$args['placeholder']) : '');
+	$disabled = ( !empty($args['disabled']) ? 'disabled="disabled"' : '' );
+	$attributes = array_filter(array($min,$max,$size,$placeholder,$disabled, $style));
+
+	$html = sprintf('<input type="%s" name="%s" class="%s regular-text ltr" id="%s" value="%s" autocomplete="off" %s />',
+		esc_attr($type),
+		esc_attr($name),
+		$class,
+		esc_attr($id),
+		esc_attr($value),
+		implode(' ', $attributes)
+	);
+	if( isset($args['help']) ){
+		$html .= '<p class="description">'.$args['help'].'</p>';
 	}
+
+	if( $args['echo'] )
+		echo $html;
+
+	return $html;
+}
 	
 
-	function eventorganiser_checkbox_field($args=array()){
-		if ( $args['label_for'] ){
+/**
+ * Utility function for printing/returning text field
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the checkbox (alias: label_for)
+ * * **name** - The name of the select box
+ * * **options** - Single or Array of options in 'value'=>'Label' format
+ * * **values** - The values of the text field
+ * * **type** - The type  of the text field (e.g. 'text','hidden','password')
 
-			/* Backwards compatible - now accept an options array: */
-			/* $options = array( option_id =>array('value'=>value,'checked'=>1|0,'label'=>label ) */
-			$options =  isset($args['options']) ? $args['options'] : false;
-			$values =  isset($args['value']) ? $args['value'] : 1;
-			$checked =  isset($args['checked']) ? $args['checked'] : 0;
-						
-			if( empty($options) && !is_array( $values ) ){
-				$options = array( 
-							$args['label_for'] => array(
-								'label'=>'',
-								'value'=>$values,
-								'checked'=>$checked,
-							));
-			}
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_checkbox_field($args=array()){
 
-			$name_prefix = isset($args['name_prefix']) ?  $args['name_prefix'] : 'eventorganiser_options';
+	$args = wp_parse_args($args,array(
+		 	'type' => 'text', 'value'=>'', 'placeholder' => '', 'help' => '','name'=>'',
+			'checked'=>'', 'echo'=>true,
+		));
 
-			foreach( $options as $id => $checkbox ){
-				printf('<label for="%1$s">
-							<input type="checkbox" name="%2$s" id="%1$s" value="%3$s" %4$s %5$s> 
-							%6$s </br>
-						</label>',
-						$id,
-						esc_attr($name_prefix.'['.$id.']'),
-						esc_attr($checkbox['value']),
-						( $checkbox['checked'] ? 'checked="checked"' : ''),
-						isset($args['class']) ? 'class"'.esc_attr($args['class']).'"'  : '', 
-						 isset($checkbox['label']) ? $checkbox['label'] : ''
-				);
-			}
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$class = isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '';
 
-			if(!empty($args['help'])){
-				echo '<p class="description">'.$args['help'].'</p>';
-			}
+	/* $options and $checked are either both arrays or they are both strings. */
+	$options =  isset($args['options']) ? $args['options'] : false;
+	$checked =  isset($args['checked']) ? $args['checked'] : 1;
+
+	$html ='';
+	if( is_array($options) ){
+		foreach( $options as $value => $opt_label ){
+			$html .= sprintf('<label for="%1$s">
+								<input type="checkbox" name="%2$s" id="%1$s" value="%3$s" %4$s %5$s> 
+								%6$s </br>
+							</label>',
+							esc_attr($id.'_'.$value),
+							esc_attr(trim($name).'[]'),
+							esc_attr($value),
+							checked( in_array($value, $checked), true, false ),
+							$class,
+							 esc_attr($opt_label)
+							);
 		}
+	}else{
+		$html .= sprintf('<input type="checkbox" id="%1$s" name="%2$s" value="%5$s" %3$s 4$s>',
+							esc_attr($id),
+							esc_attr($name),
+							checked( $checked, $options, false ),
+							$class,
+							esc_attr($options)
+							);
+	}
+	
+	if(!empty($args['help'])){
+		$html .= '<p class="description">'.$args['help'].'</p>';
 	}
 
-	function eventorganiser_textarea_field($args){
-		if ( $args['label_for'] ){
-			$current = $args['value'];
-			$type = isset($args['type']) ? $args['type'] : 'text';
-			$name_prefix = isset($args['name_prefix']) ?  $args['name_prefix'] : 'eventorganiser_options';
+	if( $args['echo'] )
+		echo $html;
 
-			if( !empty($args['tinymce']) ){
-				wp_editor( $current, esc_attr($args['label_for']) ,array(
-					'textarea_name'=>$name_prefix.'['.$args['label_for'].']',
-					'media_buttons'=>false,
-				));
+	return $html;
+}
 
-			}else{
 
-				printf('<textarea cols="50" rows="4" name="%s" class="%s large-text" id="%s">%s</textarea>',
-					esc_attr($name_prefix.'['.$args['label_for'].']'),
-					isset($args['class']) ? esc_attr($args['class'])  : '',
-					esc_attr($args['label_for']),
-					esc_textarea($current)
-				);
-			}
-			if(!empty($args['help'])){
-				echo '<p class="description"><label for="'.$args['label_for'].'">'.$args['help'].'<label></p>';
-			}
-		}
+
+/**
+ * Utility function for printing/returning text area
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the checkbox (alias: label_for)
+ * * **name** - The name of the select box
+ * * **options** - Single or Array of options in 'value'=>'Label' format
+ * * **tinymce** Whether to use the TinyMCE editor. The TinyMCE prints directly.
+ * * **value** - The value of the text area
+ * * **rows** - The number of rows. Default 5.
+ * * **cols** - The number of columns. Default 50.
+ * * **class** - Class to be added to the textarea
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_textarea_field($args){
+
+	$args = wp_parse_args($args,array(
+	 	'type' => 'text', 'value'=>'', 'tinymce' => '', 'help' => '',
+		'class'=>'large-text', 'echo'=>true,'rows'=>5, 'cols'=>50
+	));
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$value = $args['value'];
+	$class = $args['class'];
+
+	if( $args['tinymce'] ){
+		wp_editor( $current, esc_attr($args['label_for']) ,array(
+				'textarea_name'=>$name,
+				'media_buttons'=>false,
+			));
+	}else{
+		$html .= sprintf('<textarea cols="%s" rows="%d" name="%s" class="%s large-text" id="%s">%s</textarea>',
+				intval($cols),
+				intval($rows),
+				esc_attr($name),
+				esc_attr($class),
+				esc_attr($id),
+				esc_textarea($value)
+		);
 	}
+
+	if( !empty($args['help']) ){
+		$html .= '<p class="description"><label for="'.$args['label_for'].'">'.$args['help'].'<label></p>';
+	}
+
+	if( $args['echo'] )
+		echo $html;
+
+	return $html;
+}
 ?>
