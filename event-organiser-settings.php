@@ -100,7 +100,8 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 							'excerpt' => __('Excerpt'),
 							'custom-fields' => __('Custom Fields'),
 							'comments' => __('Comments'),
-							'revisions' => __('Revisions')
+							'revisions' => __('Revisions'),
+							'eventtag' =>__('Event Tags','eventorganiser'),
 						),
 						'name'=>'eventorganiser_options[supports]'
 				));
@@ -280,7 +281,7 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 		
 		switch( $tab ){
 			case 'general':
-				$checkboxes  = array('showpast','templates','excludefromsearch','deleteexpired','feed','eventtag','group_events');
+				$checkboxes  = array('showpast','templates','excludefromsearch','deleteexpired','feed','group_events');
 				$text = array('navtitle','dateformat','runningisnotpast','addtomenu');
 
 				foreach( $checkboxes as $cb ){

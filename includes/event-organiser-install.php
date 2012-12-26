@@ -152,6 +152,15 @@ function eventorganiser_upgradecheck(){
 		
 			eventorganiser_install();
 		}
+
+		if( $installed_ver < '1.6.2' ){
+			$event_tag =  eventorganiser_get_option('eventtag');
+			if( $event_tag ){
+				$options = get_option('eventorganiser_options');
+				$options['supports'][] = 'eventtag';
+				update_option('eventorganiser_options', $options);
+			}
+		}
 		update_option('eventorganiser_version', $eventorganiser_db_version);
 
 		//Run upgrade checks

@@ -102,9 +102,8 @@ function eventorganiser_get_option($option,$default=false){
 		'navtitle' =>  __('Events','eventorganiser'),
 		'group_events'=>'',
 		'feed' => 1,
-		'eventtag' => 1,
 		'deleteexpired' => 0,
-		'supports' => array('title','editor','author','thumbnail','excerpt','custom-fields','comments'),
+		'supports' => array('title','editor','author','thumbnail','excerpt','custom-fields','comments','eventtag'),
 		'event_redirect' => 'events',
 		'dateformat'=>'dd-mm',
 		'prettyurl'=> 1,
@@ -113,11 +112,14 @@ function eventorganiser_get_option($option,$default=false){
 		'menu_item_db_id'=>0,
 		'excludefromsearch'=>0,
 		'showpast'=> 0,
-		'eventtag' => 1,
 		'runningisnotpast' => 0,
       );
       $options = get_option('eventorganiser_options',$defaults);
       $options = wp_parse_args( $options, $defaults );
+
+	/* Backwards compatibility for 'eventag' option */
+	if( $option === 'eventtag' )
+		return in_array('eventtag',$options['supports']);
 
       if( !isset($options[$option]) )
            return $default;
