@@ -204,9 +204,8 @@ jQuery(document).ready(function () {
 			dayNamesMin: EOAjaxFront.locale.dayAbbrev,
 			showOn: 'button',
 			onSelect: function (dateText, dp) {
-				var id = $(this).parents('div.eo-fullcalendar').attr('id');
-				var goto = new Date(Date.parse(dateText));
-				$('#'+id).fullCalendar('gotoDate', goto);
+				var cal_id = $(this).parents('div.eo-fullcalendar').attr('id');
+				$('#'+cal_id).fullCalendar('gotoDate', new Date(Date.parse(dateText)));
             		}
         	});
 
