@@ -435,4 +435,293 @@ function _eventorganiser_check_datetime($datetime_string='',$ymd_formated=false)
 	return $datetime;
 }
 
+/**
+ * Utility function for printing/returning radio boxes
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the radiobox (alias: label_for)
+ * * **name** - The name of the radiobox
+ * * **checked** - The the value to have checked
+ * * **options** - Array of options in 'value'=>'Label' format
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_radio_field( $args ){
+
+	$args = wp_parse_args($args,array(
+			'checked'=>'', 'help' => '', 'options'=>'', 'name'=>'', 'echo'=>1,
+			'class'=>'', 'label' => '','label_for'=>''
+			));	
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$checked = $args['checked'];
+	$label = !empty($args['label']) ? '<legend class="screen-reader-text"><span>'.esc_html($args['label']).'</span></legend>' : '';
+	$class =  !empty($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '';
+
+	$html = sprintf('<fieldset %s> %s', $class, $label);
+	if( !empty($args['options']) ){
+		foreach ($args['options'] as $value => $opt_label ){
+			printf('<label for="%1$s"><input type="radio" id="%1$s" name="%3$s" value="%4$s" %2$s> <span> %5$s </span></label><br>',
+				esc_attr($id.'_'.$value),
+				checked($value, $checked, false),
+				esc_attr($name),
+				esc_attr($value),
+				esc_html($opt_label));
+		}
+	}
+	if(!empty($args['help'])){
+		$html .= '<p class="description">'.esc_html($args['help']).'</p>';
+	}
+	$html .= '</fieldset>';
+}
+
+
+/**
+ * Utility function for printing/returning select field
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the select box (alias: label_for)
+ * * **name** - The name of the select box
+ * * **selected** - The the value to have selected
+ * * **options** - Array of options in 'value'=>'Label' format
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_select_field($args){
+
+	$args = wp_parse_args($args,array(
+			'select'=>'', 'help' => '', 'options'=>'', 'name'=>'', 'echo'=>1,
+			'label_for'=>''
+		));	
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$selected = $args['selected'];
+	$class = isset($args['class']) ? esc_attr($args['class'])  : '';
+
+
+	$html = sprintf('<select %s name="%s" id="%s">',
+		isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '',
+			esc_attr($name),
+			esc_attr($args['label_for'])
+		);
+		
+		if( !empty($args['options']) ){
+			foreach ($args['options'] as $value => $label ){
+				$html .= sprintf('<option value="%s" %s> %s </option>',esc_attr($value), selected($selected, $value, false), esc_html($label));
+			}
+		}
+	$html .= '</select>';
+
+	if(!empty($args['help'])){
+		$html .= '<p class="description">'.esc_html($args['help']).'</p>';
+	}
+
+	if( $args['echo'] )
+		echo $html;
+
+	return $html;
+}
+
+
+/**
+ * Utility function for printing/returning text field
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the select box (alias: label_for)
+ * * **name** - The name of the select box
+ * * **value** - The value of the text field
+ * * **type** - The type  of the text field (e.g. 'text','hidden','password')
+ * * **options** - Array of options in 'value'=>'Label' format
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_text_field($args){
+
+	$args = wp_parse_args($args,
+		array(
+		 	'type' => 'text', 'value'=>'', 'placeholder' => '', 'help' => '','label_for'=>'',
+			 'size'=>false, 'min' => false, 'max' => false, 'style'=>false, 'echo'=>true,
+			)
+		);		
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$value = $args['value'];
+	$type = $args['type'];
+	$class = isset($args['class']) ? esc_attr($args['class'])  : '';
+
+	$min = (  !empty($args['min']) ?  sprintf('min="%d"', $args['min']) : '' );
+	$max = (  !empty($args['max']) ?  sprintf('max="%d"', $args['max']) : '' );
+	$size = (  !empty($args['size']) ?  sprintf('size="%d"', $args['size']) : '' );
+	$style = (  !empty($args['style']) ?  sprintf('style="%s"', $args['style']) : '' );
+	$placeholder = ( !empty($args['placeholder']) ? sprintf('placeholder="%s"',$args['placeholder']) : '');
+	$disabled = ( !empty($args['disabled']) ? 'disabled="disabled"' : '' );
+	$attributes = array_filter(array($min,$max,$size,$placeholder,$disabled, $style));
+
+	$html = sprintf('<input type="%s" name="%s" class="%s regular-text ltr" id="%s" value="%s" autocomplete="off" %s />',
+		esc_attr($type),
+		esc_attr($name),
+		$class,
+		esc_attr($id),
+		esc_attr($value),
+		implode(' ', $attributes)
+	);
+	if( isset($args['help']) ){
+		$html .= '<p class="description">'.$args['help'].'</p>';
+	}
+
+	if( $args['echo'] )
+		echo $html;
+
+	return $html;
+}
+	
+
+/**
+ * Utility function for printing/returning text field
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the checkbox (alias: label_for)
+ * * **name** - The name of the select box
+ * * **options** - Single or Array of options in 'value'=>'Label' format
+ * * **values** - The values of the text field
+ * * **type** - The type  of the text field (e.g. 'text','hidden','password')
+
+ * * **label** - The label for the radiobox field set
+ * * **class** - Class to be added to the radiobox field set
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_checkbox_field($args=array()){
+
+	$args = wp_parse_args($args,array(
+		 	'type' => 'text', 'value'=>'', 'placeholder' => '', 'help' => '','name'=>'',
+			'checked'=>'', 'echo'=>true,
+		));
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$class = isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '';
+
+	/* $options and $checked are either both arrays or they are both strings. */
+	$options =  isset($args['options']) ? $args['options'] : false;
+	$checked =  isset($args['checked']) ? $args['checked'] : 1;
+
+	$html ='';
+	if( is_array($options) ){
+		foreach( $options as $value => $opt_label ){
+			$html .= sprintf('<label for="%1$s">
+								<input type="checkbox" name="%2$s" id="%1$s" value="%3$s" %4$s %5$s> 
+								%6$s </br>
+							</label>',
+							esc_attr($id.'_'.$value),
+							esc_attr(trim($name).'[]'),
+							esc_attr($value),
+							checked( in_array($value, $checked), true, false ),
+							$class,
+							 esc_attr($opt_label)
+							);
+		}
+	}else{
+		$html .= sprintf('<input type="checkbox" id="%1$s" name="%2$s" value="%5$s" %3$s 4$s>',
+							esc_attr($id),
+							esc_attr($name),
+							checked( $checked, $options, false ),
+							$class,
+							esc_attr($options)
+							);
+	}
+	
+	if(!empty($args['help'])){
+		$html .= '<p class="description">'.$args['help'].'</p>';
+	}
+
+	if( $args['echo'] )
+		echo $html;
+
+	return $html;
+}
+
+
+
+/**
+ * Utility function for printing/returning text area
+ *
+ * The $args array - excepts the following keys
+ *
+ * * **id** - The id of the checkbox (alias: label_for)
+ * * **name** - The name of the select box
+ * * **options** - Single or Array of options in 'value'=>'Label' format
+ * * **tinymce** Whether to use the TinyMCE editor. The TinyMCE prints directly.
+ * * **value** - The value of the text area
+ * * **rows** - The number of rows. Default 5.
+ * * **cols** - The number of columns. Default 50.
+ * * **class** - Class to be added to the textarea
+ * * **echo** - Whether to print the mark-up or just return it
+ * * **help** - Optional, help text to accompany the field.
+ *
+ * @access private
+ * @param $args array The array of arguments
+ */
+function eventorganiser_textarea_field($args){
+
+	$args = wp_parse_args($args,array(
+	 	'type' => 'text', 'value'=>'', 'tinymce' => '', 'help' => '',
+		'class'=>'large-text', 'echo'=>true,'rows'=>5, 'cols'=>50
+	));
+
+	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
+	$name = isset($args['name']) ?  $args['name'] : '';
+	$value = $args['value'];
+	$class = $args['class'];
+
+	if( $args['tinymce'] ){
+		wp_editor( $current, esc_attr($args['label_for']) ,array(
+				'textarea_name'=>$name,
+				'media_buttons'=>false,
+			));
+	}else{
+		$html .= sprintf('<textarea cols="%s" rows="%d" name="%s" class="%s large-text" id="%s">%s</textarea>',
+				intval($cols),
+				intval($rows),
+				esc_attr($name),
+				esc_attr($class),
+				esc_attr($id),
+				esc_textarea($value)
+		);
+	}
+
+	if( !empty($args['help']) ){
+		$html .= '<p class="description"><label for="'.$args['label_for'].'">'.$args['help'].'<label></p>';
+	}
+
+	if( $args['echo'] )
+		echo $html;
+
+	return $html;
+}
 ?>
