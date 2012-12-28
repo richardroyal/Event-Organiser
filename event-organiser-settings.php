@@ -541,9 +541,7 @@ class EventOrganiser_Settings_Page extends EventOrganiser_Admin_Page{
 			</select>
 
 			<?php printf('<input type="hidden" name ="eventorganiser_options[menu_item_db_id]" value="%d" />',eventorganiser_get_option('menu_item_db_id')); ?>
-			<?php printf('<input type="text" name="eventorganiser_options[navtitle]" value="%s" />',eventorganiser_get_option('navtitle')); ?>
-			
-			<?php _e("(This may not work with some themes)",'eventorganiser'); 
+			<?php printf('<input type="text" name="eventorganiser_options[navtitle]" value="%s" />',eventorganiser_get_option('navtitle')); 
 	}
 
 
