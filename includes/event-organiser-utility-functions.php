@@ -463,7 +463,7 @@ function eventorganiser_radio_field( $args ){
 	$name = isset($args['name']) ?  $args['name'] : '';
 	$checked = $args['checked'];
 	$label = !empty($args['label']) ? '<legend class="screen-reader-text"><span>'.esc_html($args['label']).'</span></legend>' : '';
-	$class =  !empty($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '';
+	$class =  !empty($args['class']) ? 'class="'.sanitize_html_class($args['class']).'"'  : '';
 
 	$html = sprintf('<fieldset %s> %s', $class, $label);
 	if( !empty($args['options']) ){
@@ -472,7 +472,7 @@ function eventorganiser_radio_field( $args ){
 				esc_attr($id.'_'.$value),
 				checked($value, $checked, false),
 				esc_attr($name),
-				esc_attr($value),
+				eventorganiser_esc_printf(esc_attr($value)),
 				esc_html($opt_label));
 		}
 	}
@@ -492,6 +492,7 @@ function eventorganiser_radio_field( $args ){
  * * **name** - The name of the select box
  * * **selected** - The the value to have selected
  * * **options** - Array of options in 'value'=>'Label' format
+* * **multiselect** True or False for multi-select
  * * **label** - The label for the radiobox field set
  * * **class** - Class to be added to the radiobox field set
  * * **echo** - Whether to print the mark-up or just return it
@@ -503,25 +504,32 @@ function eventorganiser_radio_field( $args ){
 function eventorganiser_select_field($args){
 
 	$args = wp_parse_args($args,array(
-			'select'=>'', 'help' => '', 'options'=>'', 'name'=>'', 'echo'=>1,
-			'label_for'=>''
+			'selected'=>'', 'help' => '', 'options'=>'', 'name'=>'', 'echo'=>1,
+			'label_for'=>'','class'=>'','disabled'=>false,'multiselect'=>false,
 		));	
 
 	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
 	$name = isset($args['name']) ?  $args['name'] : '';
 	$selected = $args['selected'];
-	$class = isset($args['class']) ? esc_attr($args['class'])  : '';
+	$class = sanitize_html_class($args['class']);
+	$multiselect = ($args['multiselect'] ? 'multiple' : '' );
+	$disabled = ($args['disabled'] ? 'disabled="disabled"' : '' );
 
-
-	$html = sprintf('<select %s name="%s" id="%s">',
-		isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '',
+	$html = sprintf('<select %s name="%s" id="%s" %s>',
+		!empty( $class ) ? 'class="'.$class.'"'  : '',
 			esc_attr($name),
-			esc_attr($args['label_for'])
+			esc_attr($id),
+			$multiselect.' '.$disabled
 		);
-		
+
 		if( !empty($args['options']) ){
 			foreach ($args['options'] as $value => $label ){
-				$html .= sprintf('<option value="%s" %s> %s </option>',esc_attr($value), selected($selected, $value, false), esc_html($label));
+				if( $args['multiselect'] && is_array($selected) )
+					$_selected = selected( in_array($value, $selected), true, false);
+				else
+					$_selected =  selected($selected, $value, false);
+
+				$html .= sprintf('<option value="%s" %s> %s </option>',eventorganiser_esc_printf(esc_attr($value)),$_selected, esc_html($label));
 			}
 		}
 	$html .= '</select>';
@@ -559,7 +567,7 @@ function eventorganiser_text_field($args){
 
 	$args = wp_parse_args($args,
 		array(
-		 	'type' => 'text', 'value'=>'', 'placeholder' => '', 'help' => '','label_for'=>'',
+		 	'type' => 'text', 'value'=>'', 'placeholder' => '','label_for'=>'',
 			 'size'=>false, 'min' => false, 'max' => false, 'style'=>false, 'echo'=>true,
 			)
 		);		
@@ -573,19 +581,20 @@ function eventorganiser_text_field($args){
 	$min = (  !empty($args['min']) ?  sprintf('min="%d"', $args['min']) : '' );
 	$max = (  !empty($args['max']) ?  sprintf('max="%d"', $args['max']) : '' );
 	$size = (  !empty($args['size']) ?  sprintf('size="%d"', $args['size']) : '' );
-	$style = (  !empty($args['style']) ?  sprintf('style="%s"', $args['style']) : '' );
-	$placeholder = ( !empty($args['placeholder']) ? sprintf('placeholder="%s"',$args['placeholder']) : '');
+	$style = (  !empty($args['style']) ?  sprintf('style="%s"', eventorganiser_esc_printf($args['style'])) : '' );
+	$placeholder = ( !empty($args['placeholder']) ? sprintf('placeholder="%s"', eventorganiser_esc_printf($args['placeholder'])) : '');
 	$disabled = ( !empty($args['disabled']) ? 'disabled="disabled"' : '' );
 	$attributes = array_filter(array($min,$max,$size,$placeholder,$disabled, $style));
 
 	$html = sprintf('<input type="%s" name="%s" class="%s regular-text ltr" id="%s" value="%s" autocomplete="off" %s />',
 		esc_attr($type),
 		esc_attr($name),
-		$class,
+		sanitize_html_class($class),
 		esc_attr($id),
-		esc_attr($value),
+		eventorganiser_esc_printf(esc_attr($value)),
 		implode(' ', $attributes)
 	);
+
 	if( isset($args['help']) ){
 		$html .= '<p class="description">'.$args['help'].'</p>';
 	}
@@ -619,13 +628,13 @@ function eventorganiser_text_field($args){
 function eventorganiser_checkbox_field($args=array()){
 
 	$args = wp_parse_args($args,array(
-		 	'type' => 'text', 'value'=>'', 'placeholder' => '', 'help' => '','name'=>'',
-			'checked'=>'', 'echo'=>true,
+		 	 'help' => '','name'=>'', 'class'=>'',
+			'checked'=>'', 'echo'=>true,'multiselect'=>false
 		));
 
 	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
 	$name = isset($args['name']) ?  $args['name'] : '';
-	$class = isset($args['class']) ? 'class="'.esc_attr($args['class']).'"'  : '';
+	$class = ( $args['class'] ? "class='".sanitize_html_class($args['class'])."'"  :"" );
 
 	/* $options and $checked are either both arrays or they are both strings. */
 	$options =  isset($args['options']) ? $args['options'] : false;
@@ -640,19 +649,19 @@ function eventorganiser_checkbox_field($args=array()){
 							</label>',
 							esc_attr($id.'_'.$value),
 							esc_attr(trim($name).'[]'),
-							esc_attr($value),
+							eventorganiser_esc_printf(esc_attr($value)),
 							checked( in_array($value, $checked), true, false ),
 							$class,
 							 esc_attr($opt_label)
 							);
 		}
 	}else{
-		$html .= sprintf('<input type="checkbox" id="%1$s" name="%2$s" value="%5$s" %3$s 4$s>',
+		$html .= sprintf('<input type="checkbox" id="%1$s" name="%2$s" %3$s %4$s value="%5$s">',
 							esc_attr($id),
 							esc_attr($name),
 							checked( $checked, $options, false ),
 							$class,
-							esc_attr($options)
+							eventorganiser_esc_printf(esc_attr($options))
 							);
 	}
 	
@@ -698,20 +707,21 @@ function eventorganiser_textarea_field($args){
 	$name = isset($args['name']) ?  $args['name'] : '';
 	$value = $args['value'];
 	$class = $args['class'];
+	$html ='';
 
 	if( $args['tinymce'] ){
-		wp_editor( $current, esc_attr($args['label_for']) ,array(
+		wp_editor( $value, esc_attr($args['label_for']) ,array(
 				'textarea_name'=>$name,
 				'media_buttons'=>false,
 			));
 	}else{
 		$html .= sprintf('<textarea cols="%s" rows="%d" name="%s" class="%s large-text" id="%s">%s</textarea>',
-				intval($cols),
-				intval($rows),
+				intval($args['cols']),
+				intval($args['rows']),
 				esc_attr($name),
-				esc_attr($class),
+				sanitize_html_class($class),
 				esc_attr($id),
-				esc_textarea($value)
+				eventorganiser_esc_printf(esc_textarea($value))
 		);
 	}
 
@@ -723,5 +733,9 @@ function eventorganiser_textarea_field($args){
 		echo $html;
 
 	return $html;
+}
+
+function eventorganiser_esc_printf($text){
+	return str_replace('%','%%',$text);
 }
 ?>
