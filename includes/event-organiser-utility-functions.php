@@ -7,9 +7,15 @@
 
 /**
  * Formats a datetime object into a specified format and handles translations.
- * Used by eo_get_the_start/end/schedule_start etc. 
+ * Used by 
+ *
+ * * {@see `eo_get_the_start()`} 
+ * * {@see `eo_get_the_end()`}
+ * * {@see `eo_get_schedule_start()`}
+ * * {@see `eo_get_schedule_last()`}
+ *
  * The constant DATETIMEOBJ can be passed to them to get datetime objects 
- * Applies eventorganiser_format_datetime filter
+ * Applies {@see `eventorganiser_format_datetime`} filter
  *
  * @since 1.2.0
  * @link http://php.net/manual/en/function.date.php PHP Date
@@ -462,17 +468,17 @@ function eventorganiser_radio_field( $args ){
 	$id = ( !empty($args['id']) ? $args['id'] : $args['label_for']);
 	$name = isset($args['name']) ?  $args['name'] : '';
 	$checked = $args['checked'];
-	$label = !empty($args['label']) ? '<legend class="screen-reader-text"><span>'.esc_html($args['label']).'</span></legend>' : '';
+	$label = !empty($args['label']) ? '<legend><label>'.esc_html($args['label']).'</label></legend>' : '';
 	$class =  !empty($args['class']) ? 'class="'.sanitize_html_class($args['class']).'"'  : '';
 
 	$html = sprintf('<fieldset %s> %s', $class, $label);
 	if( !empty($args['options']) ){
 		foreach ($args['options'] as $value => $opt_label ){
-			printf('<label for="%1$s"><input type="radio" id="%1$s" name="%3$s" value="%4$s" %2$s> <span> %5$s </span></label><br>',
+			$html .= sprintf('<label for="%1$s"><input type="radio" id="%1$s" name="%3$s" value="%4$s" %2$s> <span> %5$s </span></label><br>',
 				esc_attr($id.'_'.$value),
 				checked($value, $checked, false),
 				esc_attr($name),
-				eventorganiser_esc_printf(esc_attr($value)),
+				esc_attr($value),
 				esc_html($opt_label));
 		}
 	}
@@ -480,6 +486,11 @@ function eventorganiser_radio_field( $args ){
 		$html .= '<p class="description">'.esc_html($args['help']).'</p>';
 	}
 	$html .= '</fieldset>';
+
+	if( $args['echo'] )
+		echo $html;
+
+	return $html;
 }
 
 
@@ -529,7 +540,7 @@ function eventorganiser_select_field($args){
 				else
 					$_selected =  selected($selected, $value, false);
 
-				$html .= sprintf('<option value="%s" %s> %s </option>',eventorganiser_esc_printf(esc_attr($value)),$_selected, esc_html($label));
+				$html .= sprintf('<option value="%s" %s> %s </option>',esc_attr($value),$_selected, esc_html($label));
 			}
 		}
 	$html .= '</select>';
@@ -581,8 +592,8 @@ function eventorganiser_text_field($args){
 	$min = (  !empty($args['min']) ?  sprintf('min="%d"', $args['min']) : '' );
 	$max = (  !empty($args['max']) ?  sprintf('max="%d"', $args['max']) : '' );
 	$size = (  !empty($args['size']) ?  sprintf('size="%d"', $args['size']) : '' );
-	$style = (  !empty($args['style']) ?  sprintf('style="%s"', eventorganiser_esc_printf($args['style'])) : '' );
-	$placeholder = ( !empty($args['placeholder']) ? sprintf('placeholder="%s"', eventorganiser_esc_printf($args['placeholder'])) : '');
+	$style = (  !empty($args['style']) ?  sprintf('style="%s"', $args['style']) : '' );
+	$placeholder = ( !empty($args['placeholder']) ? sprintf('placeholder="%s"', $args['placeholder']) : '');
 	$disabled = ( !empty($args['disabled']) ? 'disabled="disabled"' : '' );
 	$attributes = array_filter(array($min,$max,$size,$placeholder,$disabled, $style));
 
@@ -591,7 +602,7 @@ function eventorganiser_text_field($args){
 		esc_attr($name),
 		sanitize_html_class($class),
 		esc_attr($id),
-		eventorganiser_esc_printf(esc_attr($value)),
+		esc_attr($value),
 		implode(' ', $attributes)
 	);
 
@@ -649,7 +660,7 @@ function eventorganiser_checkbox_field($args=array()){
 							</label>',
 							esc_attr($id.'_'.$value),
 							esc_attr(trim($name).'[]'),
-							eventorganiser_esc_printf(esc_attr($value)),
+							esc_attr($value),
 							checked( in_array($value, $checked), true, false ),
 							$class,
 							 esc_attr($opt_label)
@@ -661,7 +672,7 @@ function eventorganiser_checkbox_field($args=array()){
 							esc_attr($name),
 							checked( $checked, $options, false ),
 							$class,
-							eventorganiser_esc_printf(esc_attr($options))
+							esc_attr($options)
 							);
 	}
 	
@@ -710,7 +721,7 @@ function eventorganiser_textarea_field($args){
 	$html ='';
 
 	if( $args['tinymce'] ){
-		wp_editor( $value, esc_attr($args['label_for']) ,array(
+		wp_editor( $value, esc_attr($id) ,array(
 				'textarea_name'=>$name,
 				'media_buttons'=>false,
 			));
@@ -721,12 +732,12 @@ function eventorganiser_textarea_field($args){
 				esc_attr($name),
 				sanitize_html_class($class),
 				esc_attr($id),
-				eventorganiser_esc_printf(esc_textarea($value))
+				esc_textarea($value)
 		);
 	}
 
-	if( !empty($args['help']) ){
-		$html .= '<p class="description"><label for="'.$args['label_for'].'">'.$args['help'].'<label></p>';
+	if(!empty($args['help'])){
+		$html .= '<p class="description">'.$args['help'].'</p>';
 	}
 
 	if( $args['echo'] )

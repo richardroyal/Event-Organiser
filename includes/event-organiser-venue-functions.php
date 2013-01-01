@@ -98,7 +98,7 @@ function eo_get_venue_id_by_slugorid($venue_slug_or_id=''){
 
 
 /**
- * Get all venue data from database by venue field and data. This acts as a simple wrapper for get_term_by
+ * Get all venue data from database by venue field and data. This acts as a simple wrapper for  {@see `get_term_by()`}
  *
  * Warning: $value is not escaped for 'name' $field. You must do it yourself, if required.
  * 
@@ -125,7 +125,7 @@ function eo_get_venue_by($field,$value,$output = OBJECT, $filter = 'raw' ){
 *
 * Returns the name of a venue specified by it's slug or ID. If used inside the loop, it can return the name of the current post's venue. If specifying the venue by ID, **the ID must be an integer**.
 *
-* This function behaves differently to `eo_get_venue_slug` which takes the event ID, rather than venue ID or slug, as an optional argument.
+* This function behaves differently to {@see `eo_get_venue_slug()`} which takes the event ID, rather than venue ID or slug, as an optional argument.
 *
 * @since 1.0.0
 *
@@ -145,7 +145,7 @@ function eo_get_venue_name($venue_slug_or_id=''){
 /**
 * Echos the venue of the event
 *
-* @uses eo_get_venue_name
+* @uses eo_get_venue_name()
 * @param (int) venue id or (string) venue slug
 *
  * @since 1.0.0
@@ -370,15 +370,15 @@ function eo_get_venues($args=array()){
 /**
  * Updates new venue in the database. 
  *
- * Calls wp_update_term to update the taxonomy term
+ * Calls {@see `wp_insert_term()`} to update the taxonomy term
  * Updates venue meta data to database (for 'core' meta keys)
  * 
- * The $args is an array - the same as that accepted by wp_update_term
+ * The $args is an array - the same as that accepted by `wp_update_term()`
  * The $args array can also accept the following keys: description, address, postcode, country, latitude, longtitude
  *
  * @since 1.4.0
  *
- * @uses wp_update_term to update venue (taxonomy) term
+ * @uses wp_update_term() to update venue (taxonomy) term
  * @uses do_action() Calls 'eventorganiser_save_venue' hook with the venue id
  *
  * @param int $venue_id The Term ID of the venue to update
@@ -427,16 +427,15 @@ function eo_get_venues($args=array()){
 /**
  * Adds a new venue to the database. 
  *
- * Calls wp_insert_term to create the taxonomy term
+ * Calls {@see `wp_insert_term()`} to create the taxonomy term
  * Adds venue meta data to database (for 'core' meta keys)
  * 
- * The $args is an array - the same as that accepted by wp_insert_term
- * The $args array can also accept the following keys: 
- * *  description, address, postcode, country, latitude, longtitude
+ * The $args is an array - the same as that accepted by `wp_insert_term()`
+ * The $args array can also accept the following keys: description, address, postcode, country, latitude, longtitude
  *
  * @since 1.4.0
  *
- * @uses wp_insert_term to create venue (taxonomy) term
+ * @uses `wp_insert_term()` to create venue (taxonomy) term
  * @uses do_action() Calls 'eventorganiser_insert_venue' hook with the venue id
  * @uses do_action() Calls 'eventorganiser_save_venue' hook with the venue id
  *
@@ -484,7 +483,7 @@ function eo_get_venues($args=array()){
 /**
  * Deletes a venue in the database. 
  *
- * Calls wp_delete_term to delete the taxonomy term
+ * Calls {@see `wp_delete_term()`} to delete the taxonomy term
  * Deletes all the venue's meta 
  * 
  * @since 1.4.0
@@ -630,7 +629,7 @@ function eo_add_venue_meta($venue_id, $key, $value, $unique = false ){
  * Update venue meta field based on venue (term) ID.
  *
  * Use the $prev_value parameter to differentiate between meta fields with the
- * same key and venue ID. This may be used in place of `eo_add_venue_meta()` function. The first thing this function will do is make sure that `$meta_key` already exists on `$venue_id`. If it does not, `add_post_meta($venue_id, $meta_key, $meta_value)` is called instead and its result is returned. Returns meta_id if the meta doesn't exist, otherwise returns true on success and false on failure.
+ * same key and venue ID. This may be used in place of {@see `eo_add_venue_meta()`} function. The first thing this function will do is make sure that `$meta_key` already exists on `$venue_id`. If it does not, `add_post_meta($venue_id, $meta_key, $meta_value)` is called instead and its result is returned. Returns meta_id if the meta doesn't exist, otherwise returns true on success and false on failure.
  *
  * If the meta field for the venue does not exist, it will be added.
  *
