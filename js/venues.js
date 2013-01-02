@@ -56,6 +56,7 @@ function eo_initialize_map(Lat, Lng) {
             map: map,
             draggable: draggable
         });
+	console.log('test');
 
         if (typeof EO_Venue != 'undefined') {
             google.maps.event.addListener(marker, 'dragend', function (evt) {
@@ -63,6 +64,13 @@ function eo_initialize_map(Lat, Lng) {
                 jQuery("#eo_venue_Lng").val(evt.latLng.lng().toFixed(6));
                 map.setCenter(marker.position)
             })
+	google.maps.event.addListener(map, 'rightclick', function(e) {
+	var marker = new google.maps.Marker({
+	    position: e.latLng, 
+	    map: map
+	});
+	   eventorganiser_reverse_geocode(e.latLng);
+	});
         }
     }
 }
@@ -97,3 +105,35 @@ function eventorganiser_code_address(addrStr) {
         }
 })
 }
+function eventorganiser_reverse_geocode(latlng) {
+  var geocoder = new google.maps.Geocoder();
+  geocoder.geocode({'latLng': latlng, 'bounds': map.getBounds()}, function(result, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+	map.setCenter(latlng);
+	var location = result[0].address_components;
+
+	console.log(location);
+
+	var address = result[0].formatted_address;
+	jQuery("#eo-venue-address").val(address);
+
+	var city = location.filter(function (component) {return jQuery.inArray("locality",component.types)!= -1 });
+	city = (city.length>0 ? city[0].long_name : '' );
+	jQuery("#eo-venue-city").val(city);
+
+	var state = location.filter(function (component) {return jQuery.inArray("administrative_area_level_1",component.types)!= -1 });
+	state = (state.length>0 ? state[0].long_name : '' );
+	jQuery("#eo-venue-state").val(state);
+
+	var postcode = location.filter(function (component) {return jQuery.inArray("postal_code",component.types)!= -1 });
+	postcode = (postcode.length>0 ? postcode[0].long_name : '' );
+	jQuery("#eo-venue-postcode").val(postcode);
+
+	var country = location.filter(function (component) {return jQuery.inArray("country",component.types)!= -1 });
+	country = (country.length>0 ? country[0].long_name : '' );
+	jQuery("#eo-venue-country").val(country);
+    }
+  })
+}
+
+
