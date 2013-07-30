@@ -136,64 +136,68 @@ add_action( 'init', 'eventorganiser_create_event_taxonomies', 10 );
  */
 function eventorganiser_cpt_register() {
 
-  	$labels = array(
-		'name' => __('Events','eventorganiser'),
-		'singular_name' => __('Event','eventorganiser'),
+	$labels = array(
+		'name' => __('Activities','eventorganiser'),
+		'singular_name' => __('Activity','eventorganiser'),
 		'add_new' => _x('Add New','post'),
-		'add_new_item' => __('Add New Event','eventorganiser'),
-		'edit_item' =>  __('Edit Event','eventorganiser'),
-		'new_item' => __('New Event','eventorganiser'),
-		'all_items' =>__('All events','eventorganiser'),
-		'view_item' =>__('View Event','eventorganiser'),
-		'search_items' =>__('Search events','eventorganiser'),
-		'not_found' =>  __('No events found','eventorganiser'),
-		'not_found_in_trash' =>  __('No events found in Trash','eventorganiser'),
+		'add_new_item' => __('Add New Activity','eventorganiser'),
+		'edit_item' =>  __('Edit Activity','eventorganiser'),
+		'new_item' => __('New Activity','eventorganiser'),
+		'all_items' =>__('All activities','eventorganiser'),
+		'view_item' =>__('View Activity','eventorganiser'),
+		'search_items' =>__('Search activities','eventorganiser'),
+		'not_found' =>  __('No activities found','eventorganiser'),
+		'not_found_in_trash' =>  __('No activities found in Trash','eventorganiser'),
 		'parent_item_colon' => '',
-		'menu_name' => __('Events','eventorganiser'),
+		'menu_name' => __('Activities','eventorganiser'),
   );
 
-$exclude_from_search = (eventorganiser_get_option('excludefromsearch')==0) ? false : true;
+  #$exclude_from_search = (eventorganiser_get_option('excludefromsearch')==0) ? false : true;
+  $exclude_from_search =  true;
+  
+  if( !eventorganiser_get_option('prettyurl') ){
+  	$event_rewrite = false;
+  	$events_slug = true;
+  }else{
+  	$event_slug = trim(eventorganiser_get_option('url_event','events/event'), "/");
+  	$events_slug = trim(eventorganiser_get_option('url_events','events/event'), "/");
+  	$event_rewrite = array( 'slug' => $event_slug, 'with_front' => false,'feeds'=> true,'pages'=> true );
+  
+  	/* Workaround for http://core.trac.wordpress.org/ticket/19871 */
+  	global $wp_rewrite;  
+  	$wp_rewrite->add_rewrite_tag('%event_ondate%','([0-9]{4}(?:/[0-9]{2}(?:/[0-9]{2})?)?)','post_type=event&ondate='); 
+  	add_permastruct('event_archive', $events_slug.'/on/%event_ondate%', array( 'with_front' => false ) );
+  }
 
-if( !eventorganiser_get_option('prettyurl') ){
-	$event_rewrite = false;
-	$events_slug = true;
-}else{
-	$event_slug = trim(eventorganiser_get_option('url_event','events/event'), "/");
-	$events_slug = trim(eventorganiser_get_option('url_events','events/event'), "/");
-	$event_rewrite = array( 'slug' => $event_slug, 'with_front' => false,'feeds'=> true,'pages'=> true );
+  $supports = eventorganiser_get_option('supports');
+  $supports = array_diff($supports, array('editor'));
 
-	/* Workaround for http://core.trac.wordpress.org/ticket/19871 */
-	global $wp_rewrite;  
-	$wp_rewrite->add_rewrite_tag('%event_ondate%','([0-9]{4}(?:/[0-9]{2}(?:/[0-9]{2})?)?)','post_type=event&ondate='); 
-	add_permastruct('event_archive', $events_slug.'/on/%event_ondate%', array( 'with_front' => false ) );
-}
-
-$args = array(
-	'labels' => $labels,
-	'public' => true,
-	'publicly_queryable' => true,
-	'exclude_from_search'=>$exclude_from_search,
-	'show_ui' => true, 
-	'show_in_menu' => true, 
-	'query_var' => true,
-	'capability_type' => 'event',
-	'rewrite' => $event_rewrite,
-	'capabilities' => array(
-		'publish_posts' => 'publish_events',
-		'edit_posts' => 'edit_events',
-		'edit_others_posts' => 'edit_others_events',
-		'delete_posts' => 'delete_events',
-		'delete_others_posts' => 'delete_others_events',
-		'read_private_posts' => 'read_private_events',
-		'edit_post' => 'edit_event',
-		'delete_post' => 'delete_event',
-		'read_post' => 'read_event',
-	),
-	'has_archive' => $events_slug, 
-	'hierarchical' => false,
-	'menu_icon' => EVENT_ORGANISER_URL.'css/images/eoicon-16.png',
-	'menu_position' => apply_filters('eventorganiser_menu_position',5),
-	'supports' => eventorganiser_get_option('supports'),
+  $args = array(
+  	'labels' => $labels,
+  	'public' => true,
+  	'publicly_queryable' => true,
+  	'exclude_from_search'=>$exclude_from_search,
+  	'show_ui' => true, 
+  	'show_in_menu' => true, 
+  	'query_var' => true,
+  	'capability_type' => 'event',
+  	'rewrite' => $event_rewrite,
+  	'capabilities' => array(
+  		'publish_posts' => 'publish_events',
+  		'edit_posts' => 'edit_events',
+  		'edit_others_posts' => 'edit_others_events',
+  		'delete_posts' => 'delete_events',
+  		'delete_others_posts' => 'delete_others_events',
+  		'read_private_posts' => 'read_private_events',
+  		'edit_post' => 'edit_event',
+  		'delete_post' => 'delete_event',
+  		'read_post' => 'read_event',
+  	),
+  	'has_archive' => $events_slug, 
+  	'hierarchical' => false,
+  	'menu_icon' => EVENT_ORGANISER_URL.'css/images/eoicon-16.png',
+  	'menu_position' => apply_filters('eventorganiser_menu_position',5),
+  	'supports' => $supports,
   ); 
 
 	register_post_type( 'event', apply_filters( 'eventorganiser_event_properties', $args ) );
@@ -213,7 +217,7 @@ function eventorganiser_messages( $messages ) {
 	global $post, $post_ID;
 
 	$messages['event'] = array(
-    		0 => '', // Unused. Messages start at index 1.
+ 		0 => '', // Unused. Messages start at index 1.
 		1 => sprintf( __('Event updated. <a href="%s">View event</a>','eventorganiser'), esc_url( get_permalink($post_ID) ) ),
 		2 => __('Custom field updated.'),
 		3 => __('Custom field deleted.'),
