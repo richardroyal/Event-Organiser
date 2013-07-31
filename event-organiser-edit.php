@@ -205,7 +205,7 @@ function _eventorganiser_details_metabox( $post ){
 					</td>
 				</tr>
 				<tr valign="top" class="eo-venue-combobox-select">
-					<td class="eo-label"> <?php _e( 'Venue', 'eventorganiser' );?>: </td>
+					<td class="eo-label"> <?php _e( 'Location', 'eventorganiser' );?>: </td>
 					<td> 	
 						<select size="50" id="venue_select" name="eo_input[event-venue]">
 							<option><?php _e( 'Select a venue', 'eventorganiser' );?></option>
@@ -213,12 +213,14 @@ function _eventorganiser_details_metabox( $post ){
 								<option <?php  selected( $venue->term_id, $venue_id );?> value="<?php echo intval( $venue->term_id );?>"><?php echo esc_html( $venue->name ); ?></option>
 							<?php endforeach;?>
 						</select>
+            <br />
+            <span class="description">Start typing the location name (autocomplete slow to load).</span>
 					</td>
 				</tr>
 		
 				<!-- Add New Venue --> 
 				<tr valign="top" class="eo-add-new-venue">
-					<td class="eo-label"><label><?php _e( 'Venue Name', 'eventorganiser' );?>:</label></td>
+					<td class="eo-label"><label><?php _e( 'Location Name', 'eventorganiser' );?>:</label></td>
 					<td><input type="text" name="eo_venue[name]" id="eo_venue_name"  value=""/></td>
 				</tr>
 			<?php
@@ -241,6 +243,7 @@ function _eventorganiser_details_metabox( $post ){
 				</tr>
 
 				<!-- Venue Map --> 
+        <!--
 				<tr valign="top"  class="venue_row <?php if ( !$venue_id ) echo 'novenue';?>" >
 					<td class="eo-label"></td>
 					<td>
@@ -252,6 +255,7 @@ function _eventorganiser_details_metabox( $post ){
 						<div class="clear"></div>
 					</td>
 				</tr>
+        -->
 			</table>
 		</div>
 	<?php 
