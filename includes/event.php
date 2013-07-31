@@ -742,4 +742,22 @@ function eventorganiser_generate_ics_rrule($post_id=0){
 
 		return true;
 	}
+
+
+
+
+
+
+/**
+ *  Convert Venue Name slug to initials.
+ */
+function venue_initials($str){
+  $str = str_replace( '-', ' ', $str );
+  $ret = '';
+  foreach (explode(' ', $str) as $word){
+    $ret .= strtoupper($word[0]);  
+  }
+  return $ret;
+}
+
 ?>
