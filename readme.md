@@ -1,4 +1,4 @@
-# Event Organiser #
+# Event Organiser (MODIFIED FOR CLIENT Winthrop) 2013.08.01 #
 **Contributors:** stephenharris  
 **Tags:** events, event, event categories, event organizer, events calendar, event management, ical, locations, google map, widget, venues, maps, gigs, shows,  
 **Requires at least:** 3.3  
